@@ -2,8 +2,8 @@ using UnityEngine;
 
 public class BalaCodigo : MonoBehaviour
 {
-    public float velocidade = 20f;
-    public float tempoVida = 3f;
+    public float velocidade = 10f;
+    public float tempoVida = 50f;
 
     void Start()
     {

@@ -93,6 +93,14 @@ public class GameManager : MonoBehaviour
         return (municaoAtual < municaoMaxima);
     }
 
+    public void MostrarTextoRecarregando()
+    {
+        if (textoAmmo != null)
+        {
+            textoAmmo.text = "Recarregando...";
+        }
+    }
+
     void AtualizarTextos()
     {
         if (textoScore != null) textoScore.text = "Score: " + score;
