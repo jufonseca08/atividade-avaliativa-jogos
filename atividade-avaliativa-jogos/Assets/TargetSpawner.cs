@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections; // Precisamos disso para fazer o Unity saber contar o tempo!
 using System.Collections.Generic;
 
 public class TargetSpawner : MonoBehaviour
@@ -8,9 +9,12 @@ public class TargetSpawner : MonoBehaviour
     {
         public Transform position;         // Posição do spawn (objeto vazio)
         public GameObject targetPrefab;    // Qual target vai nascer
-        public int quantity = 1;    // Quantos targets
+        public int quantity = 1;           // Quantos targets
         public Vector3 scale = Vector3.one; // Tamanho
         public Vector3 rotation = Vector3.zero; // Rotação
+
+        // ADICIONADO: O nosso freio para o apocalipse zumbi!
+        public float respawnDelay = 3f; 
 
         // Movimento
         public bool moveHorizontal = false;
@@ -20,6 +24,10 @@ public class TargetSpawner : MonoBehaviour
 
         public int health = 1;
         public int pointsValue = 10;
+
+        // Variável invisível só para o Spawner não se perder na contagem
+        [HideInInspector]
+        public int currentlySpawning = 0; 
     }
 
     public List<SpawnPoint> spawnPoints = new List<SpawnPoint>();
@@ -27,6 +35,7 @@ public class TargetSpawner : MonoBehaviour
 
     void Start()
     {
+        // Ao dar Play, os primeiros alvos nascem instantaneamente
         SpawnAllTargets();
     }
 
@@ -49,9 +58,10 @@ public class TargetSpawner : MonoBehaviour
                 }
             }
 
-            if (currentCount < point.quantity)
+            // Se o número de alvos vivos + alvos "na fila" de espera for menor que o limite, inicia a contagem!
+            if ((currentCount + point.currentlySpawning) < point.quantity)
             {
-                SpawnTarget(point);
+                StartCoroutine(SpawnWithDelay(point));
             }
         }
     }
@@ -66,6 +76,23 @@ public class TargetSpawner : MonoBehaviour
             }
         }
     }
+
+    // ADICIONADO: A rotina que obriga o jogo a esperar antes de fabricar outro alvo
+    IEnumerator SpawnWithDelay(SpawnPoint point)
+    {
+        // Coloca o alvo na "fila" para não criar 50 cópias acidentalmente enquanto espera
+        point.currentlySpawning++;
+
+        // O SEGREDO ESTÁ AQUI: O jogo cruza os braços e espera os segundos configurados!
+        yield return new WaitForSeconds(point.respawnDelay);
+
+        // Nasce o alvo
+        SpawnTarget(point);
+
+        // Tira o alvo da "fila"
+        point.currentlySpawning--;
+    }
+
     void SpawnTarget(SpawnPoint point)
     {
         if (point.position == null || point.targetPrefab == null) return;

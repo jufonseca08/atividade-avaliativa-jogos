@@ -50,8 +50,8 @@ public class Target : MonoBehaviour
 
         transform.position = newPos;
 
-        // Rotação
-        transform.Rotate(Vector3.up, 180 * Time.deltaTime);
+        // Rotação DESATIVADA AQUI (Comentada com // para o Unity ignorar)
+        // transform.Rotate(Vector3.up, 180 * Time.deltaTime);
     }
 
     void OnTriggerEnter(Collider other)
